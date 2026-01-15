@@ -28,6 +28,7 @@ printpdf = "0.5"
 chrono = "0.4"
 rfd = "0.15" 
 directories = "5.0"
+rust_xlsxwriter = "0.64"
 
 [profile.release]
 opt-level = "z"

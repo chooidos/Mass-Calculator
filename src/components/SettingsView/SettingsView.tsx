@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AutoFillToggle from './AutoFillToggle';
 import DetailedReportToggle from './DetailedReportToggle';
+import ExportFormatSelect from './ExportFormatSelect';
 import ThemeToggleRow from './ThemeToggleRow';
 import { actions, selectors } from '../../modules/settings/store';
 import { SettingsPayload } from '../../modules/settings/types';
@@ -20,6 +21,7 @@ const SettingsView = ({ onBack, onOpenElementsEditor }: SettingsViewProps) => {
   const autoFillStartingMaterials = useSelector(
     selectors.selectAutoFillStartingMaterials,
   );
+  const exportFormat = useSelector(selectors.selectExportFormat);
 
   const buildPayload = (
     overrides: Partial<SettingsPayload>,
@@ -27,6 +29,7 @@ const SettingsView = ({ onBack, onOpenElementsEditor }: SettingsViewProps) => {
     theme_mode: mode,
     detailed_report: detailedReport,
     auto_fill_starting_materials: autoFillStartingMaterials,
+    export_format: exportFormat,
     ...overrides,
   });
 
@@ -52,6 +55,10 @@ const SettingsView = ({ onBack, onOpenElementsEditor }: SettingsViewProps) => {
     );
   };
 
+  const handleExportFormatChange = (next: 'pdf' | 'excel') => {
+    dispatch(actions.updateSettings(buildPayload({ export_format: next })));
+  };
+
   return (
     <Container sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: '100%' }}>
@@ -62,6 +69,10 @@ const SettingsView = ({ onBack, onOpenElementsEditor }: SettingsViewProps) => {
         <DetailedReportToggle
           enabled={detailedReport}
           onToggle={handleToggleDetailedReport}
+        />
+        <ExportFormatSelect
+          value={exportFormat}
+          onChange={handleExportFormatChange}
         />
         <AutoFillToggle
           enabled={autoFillStartingMaterials}

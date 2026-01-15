@@ -4,7 +4,10 @@ use tauri::{Builder, LogicalSize, Manager, Size, WindowEvent};
 mod chem;
 mod commands {
     pub mod calculate;
+    pub mod export_excel;
+    pub mod export_helpers;
     pub mod export_pdf;
+    pub mod export_types;
     pub mod fetch_elements;
     pub mod parse_formula;
     pub mod settings;
@@ -12,6 +15,7 @@ mod commands {
 
 use commands::{
     calculate::calculate,
+    export_excel::export_to_excel,
     export_pdf::export_to_pdf,
     fetch_elements::{get_elements, restore_elements, save_elements},
     parse_formula::parse_formula,
@@ -26,6 +30,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_elements,
             calculate,
+            export_to_excel,
             export_to_pdf,
             parse_formula,
             get_settings,

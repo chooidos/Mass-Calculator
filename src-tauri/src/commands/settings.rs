@@ -8,6 +8,8 @@ pub struct AppSettings {
     pub theme_mode: String,
     pub detailed_report: bool,
     pub auto_fill_starting_materials: bool,
+    #[serde(default = "default_export_format")]
+    pub export_format: String,
 }
 
 fn get_settings_path() -> PathBuf {
@@ -23,7 +25,12 @@ fn default_settings() -> AppSettings {
         theme_mode: "system".to_string(),
         detailed_report: false,
         auto_fill_starting_materials: true,
+        export_format: default_export_format(),
     }
+}
+
+fn default_export_format() -> String {
+    "pdf".to_string()
 }
 
 pub fn read_settings() -> Result<AppSettings, String> {

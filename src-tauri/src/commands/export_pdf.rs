@@ -1,34 +1,10 @@
 use chrono::Local;
 use printpdf::{BuiltinFont, Line, Mm, PdfDocument, Point};
-use rfd::FileDialog;
-use serde::{Deserialize, Serialize};
 use std::{fs::File, io::BufWriter};
 
+use crate::commands::export_helpers::pick_save_path;
+use crate::commands::export_types::CalculationOutput;
 use crate::commands::settings::read_settings;
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ReagentResult {
-    pub reagent: String,
-    pub moles: f64,
-    pub molar_mass: f64,
-    pub mass: f64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct MassCheck {
-    pub target_mass: f64,
-    pub total_reagent_mass: f64,
-    pub delta: f64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CalculationOutput {
-    pub target_formula: String,
-    pub molar_mass: f64,
-    pub target_moles: f64,
-    pub reagents: Vec<ReagentResult>,
-    pub mass_check: MassCheck,
-    pub explanation: Vec<String>,
-}
 
 fn wrap_text(line: &str, max_chars: usize) -> Vec<String> {
     let mut out = Vec::new();
@@ -60,30 +36,12 @@ pub fn export_to_pdf(output: CalculationOutput) -> Result<(), String> {
     let detailed_report = read_settings()
         .map(|settings| settings.detailed_report)
         .unwrap_or(false);
-    let mut compound = output.target_formula.trim().to_string();
-    if compound.is_empty() {
-        compound = "compound".to_string();
-    }
-    let safe_compound: String = compound
-        .chars()
-        .map(|ch| {
-            if ch.is_ascii_alphanumeric() {
-                ch
-            } else {
-                '_'
-            }
-        })
-        .collect();
-    let default_name = format!("report_{}.pdf", safe_compound);
-    let save_path = FileDialog::new()
-        .set_title("Save PDF Report")
-        .add_filter("PDF Document", &["pdf"])
-        .set_file_name(default_name)
-        .save_file();
-    let path = match save_path {
-        Some(p) => p,
-        None => return Err("Save canceled".into()),
-    };
+    let path = pick_save_path(
+        "Save PDF Report",
+        "PDF Document",
+        "pdf",
+        &output.target_formula,
+    )?;
 
     let (doc, page1, layer1) =
         PdfDocument::new("Stoichiometry Report", Mm(210.0), Mm(297.0), "Layer 1");

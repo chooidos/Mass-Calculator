@@ -12,19 +12,23 @@ import {
 import { invoke } from '@tauri-apps/api/core';
 import { useSelector } from 'react-redux';
 
-import { selectors } from '../../modules/elements/store';
+import { selectors as elementsSelectors } from '../../modules/elements/store';
+import { selectors as settingsSelectors } from '../../modules/settings/store';
 
 type ResultingTableProps = {
   onOpenExplanation: () => void;
 };
 
 const ResultingTable = ({ onOpenExplanation }: ResultingTableProps) => {
-  const results = useSelector(selectors.selectResults);
+  const results = useSelector(elementsSelectors.selectResults);
+  const exportFormat = useSelector(settingsSelectors.selectExportFormat);
 
-  const savePDF = async () => {
+  const saveExport = async () => {
     try {
-      await invoke('export_to_pdf', { output: results });
-      console.log('PDF saved!');
+      const command =
+        exportFormat === 'excel' ? 'export_to_excel' : 'export_to_pdf';
+      await invoke(command, { output: results });
+      console.log('Export saved!');
     } catch (e) {
       console.error('Save cancelled or error:', e);
     }
@@ -142,9 +146,9 @@ const ResultingTable = ({ onOpenExplanation }: ResultingTableProps) => {
               right: '24px',
               zIndex: 2,
             }}
-            onClick={savePDF}
+            onClick={saveExport}
           >
-            Save PDF
+            {exportFormat === 'excel' ? 'Save Excel' : 'Save PDF'}
           </Button>
           {(results?.explanation?.length ?? 0) > 0 && (
             <Button

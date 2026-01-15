@@ -5,3 +5,5 @@ export const selectDetailedReport = (state: RootState) =>
   state.settings.detailedReport;
 export const selectAutoFillStartingMaterials = (state: RootState) =>
   state.settings.autoFillStartingMaterials;
+export const selectExportFormat = (state: RootState) =>
+  state.settings.exportFormat;
