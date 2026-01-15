@@ -3,7 +3,7 @@ name: 'publish'
 on:
   push:
     branches:
-      - release
+      - main
 
 # This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
@@ -56,3 +56,4 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+          workflowArtifactNamePattern: '[name]_[version]_[platform]_[arch][_setup][ext]'
